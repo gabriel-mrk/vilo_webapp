@@ -1,1 +1,147 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Заполнение документа</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+            padding: 15px;
+            box-sizing: border-box;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--tg-theme-hint-color, #dddddd);
+            border-radius: 5px;
+            background-color: var(--tg-theme-secondary-bg-color, #f4f4f4);
+            color: var(--tg-theme-text-color, #000000);
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: var(--tg-theme-button-color, #007bff);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h3>Заполнение письма в банк</h3>
+    <form id="doc_form">
+        <h4>Данные письма</h4>
+        <div class="form-group">
+            <label for="abbreviation">Аббревиатура (напр. АКБ)</label>
+            <input type="text" id="abbreviation" name="ABBREVIATION" required>
+        </div>
+        <div class="form-group">
+            <label for="datenumber">Номер исходящего письма</label>
+            <input type="text" id="datenumber" name="DATENUMBER" required>
+        </div>
+        <div class="form-group">
+            <label for="document_date">Дата документа (ДД.ММ.ГГГГ)</label>
+            <input type="text" id="document_date" name="DOCUMENT_DATE" required placeholder="25.10.2025">
+        </div>
 
+        <h4>Реквизиты вашей компании</h4>
+        <div class="form-group">
+            <label for="company">Название компании</label>
+            <input type="text" id="company" name="COMPANY" required>
+        </div>
+        <div class="form-group">
+            <label for="inn">ИНН</label>
+            <input type="text" id="inn" name="INN" required>
+        </div>
+        <div class="form-group">
+            <label for="regnumber">Регистрационный номер</label>
+            <input type="text" id="regnumber" name="REGNUMBER" required>
+        </div>
+        <div class="form-group">
+            <label for="oked">ОКЭД</label>
+            <input type="text" id="oked" name="OKED" required>
+        </div>
+        <div class="form-group">
+            <label for="director">ФИО Директора</label>
+            <input type="text" id="director" name="DIRECTOR" required>
+        </div>
+
+        <h4>Данные контракта</h4>
+        <div class="form-group">
+            <label for="who">Кому адресовано (напр. В АКБ "Капиталбанк")</label>
+            <input type="text" id="who" name="WHO" required>
+        </div>
+        <div class="form-group">
+            <label for="amout">Сумма платежа (цифрами)</label>
+            <input type="text" id="amout" name="AMOUT" required>
+        </div>
+        <div class="form-group">
+            <label for="pcountry">Валюта (напр. США для 'долларов США')</label>
+            <input type="text" id="pcountry" name="PCOUNTRY" required>
+        </div>
+        <div class="form-group">
+            <label for="cnumber">Номер контракта</label>
+            <input type="text" id="cnumber" name="CNUMBER" required>
+        </div>
+        <div class="form-group">
+            <label for="cdate">Дата заключения контракта (ДД.ММ.ГГГГ)</label>
+            <input type="text" id="cdate" name="CDATE" required placeholder="15.08.2025">
+        </div>
+        <div class="form-group">
+            <label for="idn">ИДН контракта</label>
+            <input type="text" id="idn" name="IDN" required>
+        </div>
+
+        <button type="submit" class="submit-btn">Сформировать документ</button>
+    </form>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        // Получаем объект WebApp
+        let tg = window.Telegram.WebApp;
+
+        // Показываем главную кнопку, когда страница загружена
+        tg.MainButton.setText("Сформировать документ");
+        tg.MainButton.show();
+
+        // Вешаем обработчик на отправку формы
+        document.getElementById('doc_form').addEventListener('submit', function(e) {
+            e.preventDefault(); // Отменяем стандартную отправку
+
+            // Собираем данные из всех полей в один объект
+            const formData = new FormData(e.target);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key.toUpperCase()] = value;
+            });
+            
+            // Отправляем данные боту в виде JSON-строки
+            tg.sendData(JSON.stringify(data));
+
+            // Закрываем Web App
+            tg.close();
+        });
+
+        // Также можно повесить обработчик на главную кнопку Telegram
+        Telegram.WebApp.onEvent('mainButtonClicked', function(){
+            document.getElementById('doc_form').requestSubmit();
+        });
+    </script>
+</body>
+</html>
